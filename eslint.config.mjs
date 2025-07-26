@@ -2,30 +2,27 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 
 import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import { globalIgnores } from "eslint/config";
-import importPlugin from 'eslint-plugin-import';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-  plugins: {
-    import: importPlugin,
-  },
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  globalIgnores([
-    "components/ui/**",
-  ]),
+  {
+    ignores: ["components/ui/**/*"],
+  },
+  ...compat.extends(
+    "next/core-web-vitals",
+    "next/typescript",
+    "standard",
+    "prettier"
+    // "plugin:tailwindcss/recommended"
+  ),
   {
     rules: {
-      "no-undef": "off",
       "import/order": [
         "error",
         {
@@ -33,11 +30,13 @@ const eslintConfig = [
             "builtin",
             "external",
             "internal",
-            ["sibling", "parent"],
+            ["parent", "sibling"],
             "index",
             "object",
           ],
+
           "newlines-between": "always",
+
           pathGroups: [
             {
               pattern: "@app/**",
@@ -45,17 +44,21 @@ const eslintConfig = [
               position: "after",
             },
           ],
+
           pathGroupsExcludedImportTypes: ["builtin"],
-          alphabetize: { order: "asc", caseInsensitive: true },
+
+          alphabetize: {
+            order: "asc",
+            caseInsensitive: true,
+          },
         },
       ],
-    }
+      "comma-dangle": "off",
+    },
   },
   {
-    files: [
-      "*.ts",
-      "*.tsx",
-    ],
+    files: ["**/*.ts", "**/*.tsx"],
+
     rules: {
       "no-undef": "off",
     },
